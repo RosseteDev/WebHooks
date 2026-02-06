@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { WebhookManager } from './WebhookManager';          // Actualiza estas rutas
+import { WebhookManager } from './WebhookManager';
 import { MessageEditor } from './MessageEditor';
 import { MessagePreview } from './MessagePreview';
 import { SettingsBar } from './SettingsBar';
-import { Webhook, Message } from '../types/types';          // Actualiza esta ruta
-import { StorageService } from '../services/storage';       // Actualiza esta ruta
-import '../css/App.css';                                    // Actualiza esta ruta
+import { Webhook, Message } from '../types/types';
+import { StorageService } from '../services/storage';
+import '../css/App.css';
 
 function App() {
   const [webhooks, setWebhooks] = useState<Webhook[]>([]);
