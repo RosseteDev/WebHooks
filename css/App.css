@@ -1,0 +1,230 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app.dark {
+  background: #2f3136;
+  color: #dcddde;
+}
+
+.app.light {
+  background: #ffffff;
+  color: #2e3338;
+}
+
+.app-container {
+  display: flex;
+  flex: 1;
+  padding: 20px;
+  gap: 20px;
+  max-width: 1800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.left-panel {
+  flex: 1;
+  min-width: 500px;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 100px);
+}
+
+.right-panel {
+  flex: 0 0 450px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+.app.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app.dark ::-webkit-scrollbar-track {
+  background: #2f3136;
+}
+
+.app.dark ::-webkit-scrollbar-thumb {
+  background: #202225;
+  border-radius: 4px;
+}
+
+.app.dark ::-webkit-scrollbar-thumb:hover {
+  background: #18191c;
+}
+
+.app.light ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app.light ::-webkit-scrollbar-track {
+  background: #f2f3f5;
+}
+
+.app.light ::-webkit-scrollbar-thumb {
+  background: #d1d3d7;
+  border-radius: 4px;
+}
+
+.app.light ::-webkit-scrollbar-thumb:hover {
+  background: #b9bbbe;
+}
+
+/* Buttons */
+button {
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.app.dark button {
+  background: #4f545c;
+  color: #ffffff;
+}
+
+.app.dark button:hover {
+  background: #686d73;
+}
+
+.app.light button {
+  background: #e3e5e8;
+  color: #2e3338;
+}
+
+.app.light button:hover {
+  background: #d1d3d7;
+}
+
+.btn-primary {
+  background: #5865f2 !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  background: #4752c4 !important;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background: #4f545c;
+}
+
+/* Inputs */
+input, textarea, select {
+  width: 100%;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid transparent;
+  transition: border-color 0.15s ease;
+}
+
+.app.dark input,
+.app.dark textarea,
+.app.dark select {
+  background: #40444b;
+  color: #dcddde;
+}
+
+.app.dark input:focus,
+.app.dark textarea:focus,
+.app.dark select:focus {
+  outline: none;
+  border-color: #5865f2;
+}
+
+.app.light input,
+.app.light textarea,
+.app.light select {
+  background: #f2f3f5;
+  color: #2e3338;
+}
+
+.app.light input:focus,
+.app.light textarea:focus,
+.app.light select:focus {
+  outline: none;
+  border-color: #5865f2;
+}
+
+textarea {
+  resize: vertical;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.app.dark label {
+  color: #b9bbbe;
+}
+
+.app.light label {
+  color: #4f5660;
+}
+
+/* Character counters */
+.char-count {
+  float: right;
+  font-weight: normal;
+  text-transform: none;
+}
+
+.char-count.over-limit {
+  color: #ed4245;
+}
+
+@media (max-width: 1200px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    min-width: 100%;
+    max-width: 100%;
+  }
+  
+  .right-panel {
+    flex: 1;
+    position: relative;
+    max-width: 100%;
+  }
+}
