@@ -1,5 +1,253 @@
 /* =========================
-   AVATARS
+   WEBHOOK MANAGER
+========================= */
+
+.webhook-manager {
+  background: #36393f;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app.light .webhook-manager {
+  background: #f2f3f5;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.webhook-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.webhook-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-view {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 18px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-view:hover {
+  background: #40444b;
+  border-color: #5865f2;
+}
+
+.btn-view.active {
+  background: #5865f2;
+  color: white;
+  border-color: #5865f2;
+}
+
+.app.light .btn-view:hover {
+  background: #e3e5e8;
+}
+
+.app.light .btn-view.active {
+  background: #5865f2;
+  color: white;
+}
+
+.btn-add {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  background: #5865f2;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.btn-add:hover {
+  background: #4752c4;
+  transform: scale(1.05);
+}
+
+/* =========================
+   FILTROS Y BÚSQUEDA
+========================= */
+
+.webhook-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: #2f3136;
+  color: #dcddde;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: #5865f2;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1);
+}
+
+.app.light .search-input {
+  background: #ffffff;
+  color: #2e3338;
+  border-color: #d1d3d7;
+}
+
+.app.light .search-input:focus {
+  border-color: #5865f2;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1);
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.category-filter {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: #2f3136;
+  color: #dcddde;
+  border: 1px solid transparent;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-filter:hover {
+  border-color: #5865f2;
+}
+
+.app.light .category-filter {
+  background: #ffffff;
+  color: #2e3338;
+  border-color: #d1d3d7;
+}
+
+.btn-filter-favorite {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 18px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn-filter-favorite:hover {
+  background: #40444b;
+  transform: scale(1.1);
+}
+
+.btn-filter-favorite.active {
+  background: #faa81a;
+  color: white;
+  transform: scale(1.1);
+}
+
+.app.light .btn-filter-favorite:hover {
+  background: #e3e5e8;
+}
+
+/* =========================
+   CONTENEDOR DE WEBHOOKS
+========================= */
+
+.webhook-container {
+  display: grid;
+  gap: 12px;
+  min-height: 200px;
+}
+
+.webhook-container.grid {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.webhook-container.list {
+  grid-template-columns: 1fr;
+}
+
+/* =========================
+   WEBHOOK CARD
+========================= */
+
+.webhook-card {
+  position: relative;
+  background: #2f3136;
+  border: 2px solid transparent;
+  border-left: 4px solid #5865f2;
+  border-radius: 8px;
+  padding: 16px 12px;
+  cursor: move;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  overflow: visible;
+}
+
+.webhook-card.list {
+  flex-direction: row;
+  padding: 12px;
+  gap: 12px;
+}
+
+.app.light .webhook-card {
+  background: #ffffff;
+  border-right-color: #d1d3d7;
+  border-top-color: #d1d3d7;
+  border-bottom-color: #d1d3d7;
+}
+
+.webhook-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: currentColor;
+}
+
+.webhook-card.selected {
+  background: #404449;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.3);
+  transform: scale(1.02);
+}
+
+.app.light .webhook-card.selected {
+  background: #e7f0ff;
+}
+
+.webhook-card.drag-over {
+  border-style: dashed;
+  background: #404449;
+  opacity: 0.6;
+}
+
+/* =========================
+   AVATAR
 ========================= */
 
 .webhook-avatar {
@@ -12,183 +260,145 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+  position: relative;
 }
 
-.webhook-avatar img,
-.avatar-image {
+.webhook-card.list .webhook-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+.webhook-card:hover .webhook-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+}
+
+.webhook-avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  display: block; /* Elimina espacio inline */
-  border-radius: 50%;
-}
-
-.webhook-avatar-small {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  margin-left: 8px;
-  vertical-align: middle;
 }
 
 .avatar-placeholder {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
   color: white;
 }
 
-/* =========================
-   FORMULARIOS
-========================= */
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.hint {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: 0.25rem;
-}
-
-/* =========================
-   WEBHOOK MANAGER
-========================= */
-
-.webhook-manager {
-  background: #36393f;
-  border-radius: 8px;
-  padding: 16px;
-}
-
-.app.light .webhook-manager {
-  background: #f2f3f5;
-}
-
-/* Header */
-
-.webhook-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.webhook-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-/* Botón agregar */
-
-.btn-add {
-  width: 32px;
-  height: 32px;
-  padding: 0;
+.webhook-card.list .avatar-placeholder {
   font-size: 20px;
-  line-height: 1;
-  background: #5865f2;
-  color: white;
-}
-
-.btn-add:hover {
-  background: #4752c4;
 }
 
 /* =========================
-   GRID Y CARDS
+   INFO
 ========================= */
 
-.webhook-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 12px;
+.webhook-info {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
 }
 
-.webhook-card {
-  position: relative;
-  background: #2f3136;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 16px 12px;
-  cursor: move;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.app.light .webhook-card {
-  background: #ffffff;
-}
-
-.webhook-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.webhook-card.selected {
-  border-color: #5865f2;
-  background: #404449;
-}
-
-.app.light .webhook-card.selected {
-  background: #e7f0ff;
+.webhook-card.list .webhook-info {
+  text-align: left;
 }
 
 .webhook-name {
-  font-size: 12px;
-  font-weight: 500;
-  text-align: center;
-  max-width: 100%;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.app.light .webhook-name {
+  color: #2e3338;
+}
+
+.webhook-category {
+  font-size: 11px;
+  color: #b9bbbe;
+  background: #40444b;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.app.light .webhook-category {
+  color: #5f6368;
+  background: #e3e5e8;
 }
 
 /* =========================
-   BOTÓN ELIMINAR
+   BOTONES DE ACCIÓN
 ========================= */
 
-.btn-delete {
+.btn-favorite {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 24px;
-  height: 24px;
+  top: 8px;
+  left: 8px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  font-size: 18px;
-  line-height: 1;
-  background: #ed4245;
-  color: white;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  font-size: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  border-radius: 50%;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  z-index: 10;
 }
 
-.webhook-card:hover .btn-delete {
+.btn-favorite:hover {
   opacity: 1;
+  transform: scale(1.15);
+  background: rgba(0, 0, 0, 0.7);
 }
 
-.btn-delete:hover {
-  background: #c03537;
+.btn-favorite.active {
+  opacity: 1;
+  color: #faa81a;
+  animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.btn-settings {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 16px;
+  background: rgba(88, 101, 242, 0.5);
+  border: none;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.webhook-card:hover .btn-settings {
+  opacity: 0.8;
+}
+
+.btn-settings:hover {
+  opacity: 1 !important;
+  transform: scale(1.15) rotate(90deg);
+  background: rgba(88, 101, 242, 0.9);
+  box-shadow: 0 0 12px rgba(88, 101, 242, 0.6);
+}
+
+.webhook-card.list .btn-settings {
+  opacity: 0.8;
 }
 
 /* =========================
@@ -203,6 +413,12 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal {
@@ -214,6 +430,18 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .app.light .modal {
@@ -225,8 +453,6 @@
   margin-bottom: 8px;
 }
 
-/* Error */
-
 .error-message {
   padding: 12px;
   background: #ed424533;
@@ -236,7 +462,86 @@
   color: #ed4245;
 }
 
-/* Acciones */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b9bbbe;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+.app.light .form-group label {
+  color: #5f6368;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: #2f3136;
+  color: #dcddde;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #5865f2;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.1);
+}
+
+.app.light .form-group input,
+.app.light .form-group select {
+  background: #f2f3f5;
+  color: #2e3338;
+}
+
+.hint {
+  font-size: 11px;
+  color: #72767d;
+  font-style: italic;
+}
+
+.app.light .hint {
+  color: #80868b;
+}
+
+.color-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.color-option {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 3px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-option.selected {
+  border-color: white;
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+}
 
 .modal-actions {
   display: flex;
@@ -246,5 +551,62 @@
 }
 
 .modal-actions button {
-  flex: 0 0 auto;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #5865f2 !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover {
+  background: #4752c4 !important;
+}
+
+/* =========================
+   ESTADO VACÍO
+========================= */
+
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 40px;
+  text-align: center;
+  color: #b9bbbe;
+  font-size: 14px;
+}
+
+.app.light .empty-state {
+  color: #5f6368;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .webhook-container.grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .webhook-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .avatar-placeholder {
+    font-size: 24px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+  }
+
+  .category-filter,
+  .btn-filter-favorite {
+    width: 100%;
+  }
 }

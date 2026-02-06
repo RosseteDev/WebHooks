@@ -4,6 +4,9 @@ export interface Webhook {
   url: string;
   avatarUrl?: string;
   createdAt: number;
+  category?: string;
+  color?: string;
+  isFavorite?: boolean;
 }
 
 export interface EmbedField {

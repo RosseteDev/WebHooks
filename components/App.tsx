@@ -72,6 +72,10 @@ function App() {
     }
   };
 
+  const handleReorderWebhooks = (reorderedWebhooks: Webhook[]) => {
+    setWebhooks(reorderedWebhooks);
+  };
+
   const handleClearMessage = () => {
     if (window.confirm('¿Limpiar todo el mensaje actual?')) {
       setMessage(StorageService.getDefaultMessage());
@@ -222,7 +226,7 @@ function App() {
             onSelect={setSelectedWebhookId}
             onAdd={handleAddWebhook}
             onDelete={handleDeleteWebhook}
-            onReorder={() => {}}
+            onReorder={handleReorderWebhooks}
           />
 
           <MessageEditor
