@@ -9,7 +9,7 @@ export function SettingsBar({ darkMode, onToggleDarkMode }: Props) {
   return (
     <div className="settings-bar">
       <div className="settings-left">
-        <h1>Discohook Clone</h1>
+        <h1>Degeneracy Den</h1>
       </div>
       
       <div className="settings-right">

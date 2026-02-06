@@ -45,7 +45,6 @@ export function MessagePreview({ message, webhook }: Props) {
       }
 
       setLastSent(new Date());
-      alert('✅ Mensaje enviado exitosamente');
     } catch (error) {
       console.error('Send error:', error);
       alert(`❌ Error al enviar: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -70,24 +69,6 @@ export function MessagePreview({ message, webhook }: Props) {
           {sending ? 'Enviando...' : 'Enviar Mensaje'}
         </button>
       </div>
-
-      {webhook && (
-        <div className="webhook-info">
-          <div className="webhook-info-line">
-            <span className="label">Webhook:</span>
-            <span className="value">{webhook.name}</span>
-            {webhook.avatarUrl && (
-              <img src={webhook.avatarUrl} alt={webhook.name} className="webhook-avatar-small" />
-            )}
-          </div>
-          {lastSent && (
-            <div className="webhook-info-line">
-              <span className="label">Último envío:</span>
-              <span className="value">{lastSent.toLocaleTimeString()}</span>
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="discord-preview">
         <div className="discord-message">

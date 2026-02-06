@@ -1,4 +1,46 @@
-/* Añade al archivo WebhookManager.css */
+/* =========================
+   AVATARS
+========================= */
+
+.webhook-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #5865f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.webhook-avatar img,
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block; /* Elimina espacio inline */
+  border-radius: 50%;
+}
+
+.webhook-avatar-small {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.avatar-placeholder {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+}
+
+/* =========================
+   FORMULARIOS
+========================= */
 
 .form-group {
   margin-bottom: 1rem;
@@ -26,27 +68,9 @@
   margin-top: 0.25rem;
 }
 
-.webhook-avatar-small {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-
-.avatar-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.webhook-card .webhook-avatar img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-}
+/* =========================
+   WEBHOOK MANAGER
+========================= */
 
 .webhook-manager {
   background: #36393f;
@@ -57,6 +81,8 @@
 .app.light .webhook-manager {
   background: #f2f3f5;
 }
+
+/* Header */
 
 .webhook-header {
   display: flex;
@@ -69,6 +95,8 @@
   font-size: 16px;
   font-weight: 600;
 }
+
+/* Botón agregar */
 
 .btn-add {
   width: 32px;
@@ -84,9 +112,13 @@
   background: #4752c4;
 }
 
+/* =========================
+   GRID Y CARDS
+========================= */
+
 .webhook-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
   gap: 12px;
 }
 
@@ -95,13 +127,13 @@
   background: #2f3136;
   border: 2px solid transparent;
   border-radius: 8px;
-  padding: 12px;
+  padding: 16px 12px;
   cursor: move;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .app.light .webhook-card {
@@ -122,29 +154,6 @@
   background: #e7f0ff;
 }
 
-.webhook-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: #5865f2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.webhook-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.avatar-placeholder {
-  font-size: 24px;
-  font-weight: 600;
-  color: white;
-}
-
 .webhook-name {
   font-size: 12px;
   font-weight: 500;
@@ -154,6 +163,10 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* =========================
+   BOTÓN ELIMINAR
+========================= */
 
 .btn-delete {
   position: absolute;
@@ -175,16 +188,16 @@
 }
 
 .btn-delete:hover {
-  background: #c03537 !important;
+  background: #c03537;
 }
 
-/* Modal */
+/* =========================
+   MODAL
+========================= */
+
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
@@ -212,6 +225,8 @@
   margin-bottom: 8px;
 }
 
+/* Error */
+
 .error-message {
   padding: 12px;
   background: #ed424533;
@@ -220,6 +235,8 @@
   font-size: 14px;
   color: #ed4245;
 }
+
+/* Acciones */
 
 .modal-actions {
   display: flex;
@@ -231,5 +248,3 @@
 .modal-actions button {
   flex: 0 0 auto;
 }
-
-
