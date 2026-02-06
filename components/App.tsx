@@ -1,216 +1,167 @@
-import { useState } from 'react';
-import { Message } from '../types/types';
-import { BackupService } from '../services/backup';
-import '../css/BackupsManager.css';
+import { useState, useEffect } from 'react';
+import { Message, Webhook } from '../types/types';
+import { StorageService } from '../services/storage';
+import { WebhookManager } from './WebhookManager';
+import { MessageEditor } from './MessageEditor';
+import { MessagePreview } from './MessagePreview';
+import { BackupsManager } from './BackupsManager';
+import { ShareMessage } from './ShareMessage';
+import { SettingsModal } from './SettingsModal';
+import { SettingsBar } from './SettingsBar';
+import '../css/App.css';
 
-interface Backup {
-  id: string;
-  name: string;
-  message: Message;
-  timestamp: number;
-}
+function App() {
+  const [darkMode, setDarkMode] = useState(true);
+  const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+  const [selectedWebhookId, setSelectedWebhookId] = useState<string | null>(null);
+  const [message, setMessage] = useState<Message>(StorageService.getDefaultMessage());
+  const [showBackups, setShowBackups] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
-interface Props {
-  currentMessage: Message;
-  onLoad: (message: Message) => void;
-  onClose: () => void;
-}
+  // Cargar webhooks al montar
+  useEffect(() => {
+    const loaded = StorageService.loadWebhooks();
+    setWebhooks(loaded);
+    if (loaded.length > 0 && !selectedWebhookId) {
+      setSelectedWebhookId(loaded[0].id);
+    }
+  }, []);
 
-export function BackupsManager({ currentMessage, onLoad, onClose }: Props) {
-  const [backups, setBackups] = useState<Backup[]>(BackupService.loadBackups());
-  const [newBackupName, setNewBackupName] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState('');
-
-  const handleSave = () => {
-    const name = newBackupName.trim() || `Backup ${new Date().toLocaleString()}`;
+  // Cargar mensaje compartido desde URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const shareData = params.get('share');
     
-    const backup: Backup = {
-      id: BackupService.generateId(),
-      name,
-      message: currentMessage,
-      timestamp: Date.now()
-    };
+    if (shareData) {
+      try {
+        const decoded = decodeShareUrl(shareData);
+        setMessage(decoded);
+        // Limpiar URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } catch (error) {
+        console.error('Error loading shared message:', error);
+      }
+    }
+  }, []);
 
-    BackupService.saveBackup(backup);
-    setBackups(BackupService.loadBackups());
-    setNewBackupName('');
+  const decodeShareUrl = (data: string): Message => {
+    const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64 + '='.repeat((4 - base64.length % 4) % 4);
+    const decoded = atob(padded);
+    const json = decodeURIComponent(
+      decoded.split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
+    );
+    return JSON.parse(json);
   };
 
-  const handleLoad = (backup: Backup) => {
-    if (window.confirm(`¿Cargar backup "${backup.name}"?`)) {
-      onLoad(backup.message);
-      onClose();
+  const handleAddWebhook = (webhook: Webhook) => {
+    const updated = [...webhooks, webhook];
+    setWebhooks(updated);
+    StorageService.saveWebhooks(updated);
+    setSelectedWebhookId(webhook.id);
+  };
+
+  const handleDeleteWebhook = (id: string) => {
+    const updated = webhooks.filter(w => w.id !== id);
+    setWebhooks(updated);
+    StorageService.saveWebhooks(updated);
+    if (selectedWebhookId === id) {
+      setSelectedWebhookId(updated.length > 0 ? updated[0].id : null);
     }
   };
 
-  const handleDelete = (id: string) => {
-    const backup = backups.find(b => b.id === id);
-    if (backup && window.confirm(`¿Eliminar "${backup.name}"?`)) {
-      BackupService.deleteBackup(id);
-      setBackups(BackupService.loadBackups());
+  const handleClearMessage = () => {
+    if (window.confirm('¿Limpiar todo el mensaje actual?')) {
+      setMessage(StorageService.getDefaultMessage());
     }
   };
 
-  const handleRename = (id: string) => {
-    if (!editName.trim()) return;
-    
-    BackupService.renameBackup(id, editName.trim());
-    setBackups(BackupService.loadBackups());
-    setEditingId(null);
-    setEditName('');
+  const handleLoadMessage = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Failed to fetch');
+      
+      const data = await response.json();
+      const parsed = StorageService.parseMessageJSON(data);
+      setMessage(parsed);
+    } catch (error) {
+      console.error('Load error:', error);
+      alert('Error al cargar mensaje desde URL');
+    }
   };
 
-  const handleExport = (backup: Backup) => {
-    const json = JSON.stringify(backup.message, null, 2);
+  const handleExportJSON = () => {
+    const json = JSON.stringify(message, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${backup.name.replace(/[^a-z0-9]/gi, '_')}.json`;
+    a.download = 'message.json';
     a.click();
     URL.revokeObjectURL(url);
   };
 
-  const handleImport = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      try {
-        const text = await file.text();
-        const data = JSON.parse(text);
-        
-        const backup: Backup = {
-          id: BackupService.generateId(),
-          name: file.name.replace('.json', ''),
-          message: data,
-          timestamp: Date.now()
-        };
-
-        BackupService.saveBackup(backup);
-        setBackups(BackupService.loadBackups());
-      } catch (error) {
-        alert('Error importando backup: archivo JSON inválido');
-        console.error('Import error:', error);
-      }
-    };
-    input.click();
-  };
-
-  const sortedBackups = [...backups].sort((a, b) => b.timestamp - a.timestamp);
+  const selectedWebhook = webhooks.find(w => w.id === selectedWebhookId);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal backups-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Backups</h2>
-          <button className="btn-close" onClick={onClose}>×</button>
+    <div className={`app ${darkMode ? 'dark' : 'light'}`}>
+      <SettingsBar
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode(!darkMode)}
+        onOpenBackups={() => setShowBackups(true)}
+        onOpenShare={() => setShowShare(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+
+      <div className="app-container">
+        <div className="left-panel">
+          <WebhookManager
+            webhooks={webhooks}
+            selectedId={selectedWebhookId}
+            onSelect={setSelectedWebhookId}
+            onAdd={handleAddWebhook}
+            onDelete={handleDeleteWebhook}
+            onReorder={() => {}}
+          />
+
+          <MessageEditor
+            message={message}
+            onChange={setMessage}
+            onClear={handleClearMessage}
+            onLoadMessage={handleLoadMessage}
+            onExportJSON={handleExportJSON}
+          />
         </div>
 
-        <div className="backups-content">
-          <div className="save-section">
-            <h3>Guardar Actual</h3>
-            <div className="save-group">
-              <input
-                type="text"
-                placeholder="Nombre del backup (opcional)"
-                value={newBackupName}
-                onChange={(e) => setNewBackupName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSave()}
-              />
-              <button className="btn-primary" onClick={handleSave}>
-                Guardar
-              </button>
-            </div>
-          </div>
-
-          <div className="backups-list-section">
-            <div className="section-header">
-              <h3>Backups Guardados ({backups.length})</h3>
-              <button className="btn-small" onClick={handleImport}>
-                Importar JSON
-              </button>
-            </div>
-
-            {sortedBackups.length === 0 ? (
-              <div className="empty-state">
-                <p>No hay backups guardados</p>
-              </div>
-            ) : (
-              <div className="backups-list">
-                {sortedBackups.map((backup) => (
-                  <div key={backup.id} className="backup-item">
-                    <div className="backup-info">
-                      {editingId === backup.id ? (
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') handleRename(backup.id);
-                            if (e.key === 'Escape') setEditingId(null);
-                          }}
-                          onBlur={() => handleRename(backup.id)}
-                          autoFocus
-                        />
-                      ) : (
-                        <>
-                          <div className="backup-name">{backup.name}</div>
-                          <div className="backup-date">
-                            {new Date(backup.timestamp).toLocaleString()}
-                          </div>
-                          <div className="backup-stats">
-                            {backup.message.embeds.length} embed(s) • 
-                            {backup.message.content.length} caracteres
-                          </div>
-                        </>
-                      )}
-                    </div>
-
-                    <div className="backup-actions">
-                      <button
-                        className="btn-icon"
-                        onClick={() => handleLoad(backup)}
-                        title="Cargar"
-                      >
-                        📂
-                      </button>
-                      <button
-                        className="btn-icon"
-                        onClick={() => {
-                          setEditingId(backup.id);
-                          setEditName(backup.name);
-                        }}
-                        title="Renombrar"
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        className="btn-icon"
-                        onClick={() => handleExport(backup)}
-                        title="Exportar"
-                      >
-                        💾
-                      </button>
-                      <button
-                        className="btn-icon btn-danger"
-                        onClick={() => handleDelete(backup.id)}
-                        title="Eliminar"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="right-panel">
+          <MessagePreview
+            message={message}
+            webhook={selectedWebhook}
+          />
         </div>
       </div>
+
+      {showBackups && (
+        <BackupsManager
+          currentMessage={message}
+          onLoad={setMessage}
+          onClose={() => setShowBackups(false)}
+        />
+      )}
+
+      {showShare && (
+        <ShareMessage
+          message={message}
+          onClose={() => setShowShare(false)}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsModal onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 }
+
+export default App;
