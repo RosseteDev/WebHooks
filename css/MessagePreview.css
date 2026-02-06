@@ -32,6 +32,48 @@
   background: #2d7d46 !important;
 }
 
+/* Thread Info */
+.thread-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #5865f2;
+  border-radius: 4px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.thread-icon {
+  font-size: 16px;
+}
+
+.thread-name {
+  flex: 1;
+}
+
+/* Flags Info */
+.flags-info {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #faa81a;
+  color: #2e3338;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .webhook-info {
   background: #2f3136;
   border-radius: 4px;
@@ -155,10 +197,78 @@
   line-height: 1.375;
   margin-bottom: 8px;
   word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .app.light .message-text {
   color: #2e3338;
+}
+
+/* Message Files */
+.message-files {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.file-preview {
+  max-width: 400px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #2f3136;
+}
+
+.app.light .file-preview {
+  background: #e3e5e8;
+}
+
+.file-preview-image {
+  max-width: 100%;
+  max-height: 300px;
+  display: block;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.file-preview-generic {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+}
+
+.file-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.file-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-preview-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #dcddde;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app.light .file-preview-name {
+  color: #2e3338;
+}
+
+.file-preview-size {
+  font-size: 12px;
+  color: #b9bbbe;
+  margin-top: 2px;
+}
+
+.app.light .file-preview-size {
+  color: #5f6368;
 }
 
 /* Embed styling */

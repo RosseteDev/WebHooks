@@ -1,4 +1,4 @@
-import { Webhook, Message, Embed } from '../types/types';
+import { Webhook, Message, Embed} from '../types/types';
 
 export class StorageService {
   private static readonly WEBHOOKS_KEY = 'discohook_webhooks';
@@ -15,7 +15,7 @@ export class StorageService {
         parsed.hostname === 'discordapp.com' ||
         parsed.hostname.endsWith('.discord.com')
       );
-      
+
       const hasWebhookPath = parsed.pathname.includes('/api/webhooks/');
       const pathParts = parsed.pathname.split('/');
       const hasIdAndToken = pathParts.length >= 5;
@@ -74,7 +74,12 @@ export class StorageService {
   static getDefaultMessage(): Message {
     return {
       content: '',
-      embeds: []
+      embeds: [],
+      files: [],
+      flags: {
+        suppressEmbeds: false,
+        suppressNotifications: false
+      }
     };
   }
 
@@ -92,7 +97,13 @@ export class StorageService {
       username: typeof data.username === 'string' ? data.username : undefined,
       avatarUrl: typeof data.avatar_url === 'string' ? data.avatar_url : undefined,
       embeds: Array.isArray(data.embeds) ? data.embeds.map(this.parseEmbed) : [],
-      tts: typeof data.tts === 'boolean' ? data.tts : undefined
+      tts: typeof data.tts === 'boolean' ? data.tts : undefined,
+      threadName: typeof data.thread_name === 'string' ? data.thread_name : undefined,
+      files: [],
+      flags: {
+        suppressEmbeds: typeof data.flags === 'number' ? !!(data.flags & (1 << 2)) : false,
+        suppressNotifications: typeof data.flags === 'number' ? !!(data.flags & (1 << 12)) : false
+      }
     };
   }
 
@@ -154,6 +165,19 @@ export class StorageService {
       value: typeof field.value === 'string' ? field.value : '',
       inline: typeof field.inline === 'boolean' ? field.inline : false
     };
+  }
+
+  /**
+   * Convierte flags a número de Discord API
+   */
+  static flagsToNumber(flags?: { suppressEmbeds?: boolean; suppressNotifications?: boolean }): number {
+    if (!flags) return 0;
+    
+    let flagsNumber = 0;
+    if (flags.suppressEmbeds) flagsNumber |= (1 << 2); // SUPPRESS_EMBEDS
+    if (flags.suppressNotifications) flagsNumber |= (1 << 12); // SUPPRESS_NOTIFICATIONS
+    
+    return flagsNumber;
   }
 
   /**

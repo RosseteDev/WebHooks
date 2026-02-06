@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Message, Embed } from '../types/types';            // Actualiza
-import { EmbedEditor } from './EmbedEditor';                // Mantiene igual
-import '../css/MessageEditor.css';                          // Actualiza
+import { useState, useRef } from 'react';
+import { Message, Embed, MessageFile } from '../types/types';
+import { EmbedEditor } from './EmbedEditor';
+import '../css/MessageEditor.css';
 
 interface Props {
   message: Message;
@@ -14,12 +14,13 @@ interface Props {
 export function MessageEditor({ message, onChange, onClear, onLoadMessage, onExportJSON }: Props) {
   const [loadUrl, setLoadUrl] = useState('');
   const [editMode, setEditMode] = useState<'json' | 'visual'>('visual');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleContentChange = (content: string) => {
     if (content.length <= 2000) {
       onChange({ ...message, content });
     }
-  };
+  }
 
   const handleAddEmbed = () => {
     if (message.embeds.length >= 10) {
@@ -50,6 +51,132 @@ export function MessageEditor({ message, onChange, onClear, onLoadMessage, onExp
     if (!loadUrl.trim()) return;
     onLoadMessage(loadUrl.trim());
     setLoadUrl('');
+  };
+
+  // Files handling
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newFiles: MessageFile[] = [];
+    const currentSize = message.files?.reduce((acc, f) => acc + f.size, 0) || 0;
+    let totalSize = currentSize;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (totalSize + file.size > 25 * 1024 * 1024) {
+        alert('El tamaño total de archivos no puede exceder 25 MB');
+        break;
+      }
+
+      newFiles.push({
+        id: `file_${Date.now()}_${i}`,
+        file: file,
+        name: file.name,
+        size: file.size
+      });
+
+      totalSize += file.size;
+    }
+
+    onChange({
+      ...message,
+      files: [...(message.files || []), ...newFiles]
+    });
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveFile = (id: string) => {
+    onChange({
+      ...message,
+      files: (message.files || []).filter(f => f.id !== id)
+    });
+  };
+
+  const handleClearFiles = () => {
+    onChange({ ...message, files: [] });
+  };
+
+  const handlePasteFiles = async () => {
+    try {
+      const items = await navigator.clipboard.read();
+      const files: File[] = [];
+
+      for (const item of items) {
+        for (const type of item.types) {
+          if (type.startsWith('image/')) {
+            const blob = await item.getType(type);
+            const file = new File([blob], `clipboard-${Date.now()}.png`, { type });
+            files.push(file);
+          }
+        }
+      }
+
+      if (files.length === 0) {
+        alert('No se encontraron imágenes en el portapapeles');
+        return;
+      }
+
+      const newFiles: MessageFile[] = files.map((file, i) => ({
+        id: `file_${Date.now()}_${i}`,
+        file: file,
+        name: file.name,
+        size: file.size
+      }));
+
+      const currentSize = message.files?.reduce((acc, f) => acc + f.size, 0) || 0;
+      const totalSize = currentSize + newFiles.reduce((acc, f) => acc + f.size, 0);
+
+      if (totalSize > 25 * 1024 * 1024) {
+        alert('El tamaño total de archivos excedería 25 MB');
+        return;
+      }
+
+      onChange({
+        ...message,
+        files: [...(message.files || []), ...newFiles]
+      });
+    } catch (error) {
+      console.error('Error pasting files:', error);
+      alert('Error al pegar desde el portapapeles. Asegúrate de tener permisos.');
+    }
+  };
+
+  // Flags handling
+  const handleToggleSuppressEmbeds = () => {
+    onChange({
+      ...message,
+      flags: {
+        ...message.flags,
+        suppressEmbeds: !message.flags?.suppressEmbeds
+      }
+    });
+  };
+
+  const handleToggleSuppressNotifications = () => {
+    onChange({
+      ...message,
+      flags: {
+        ...message.flags,
+        suppressNotifications: !message.flags?.suppressNotifications
+      }
+    });
+  };
+
+  const getTotalFileSize = () => {
+    return message.files?.reduce((acc, f) => acc + f.size, 0) || 0;
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
   return (
@@ -107,10 +234,100 @@ export function MessageEditor({ message, onChange, onClear, onLoadMessage, onExp
           </div>
 
           <div className="section">
-            <label>Files</label>
-            <div className="file-info">
-              Archivos no soportados en modo cliente. Usar Discord directamente.
+            <label>Thread</label>
+            <input
+              type="text"
+              placeholder="Forum Thread Name (opcional, 0/100)"
+              value={message.threadName || ''}
+              onChange={(e) => onChange({ ...message, threadName: e.target.value.slice(0, 100) })}
+              maxLength={100}
+            />
+            <div className="hint">
+              {message.threadName ? `${message.threadName.length}/100` : '0/100'}
             </div>
+          </div>
+
+          <div className="section">
+            <label>Flags</label>
+            <div className="flags-container">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={message.flags?.suppressEmbeds || false}
+                  onChange={handleToggleSuppressEmbeds}
+                />
+                <span>Suppress Embeds</span>
+              </label>
+              <div className="hint">
+                Hides link embeds. This cannot be used in conjunction with rich embeds (created with "Add Embed").
+              </div>
+
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={message.flags?.suppressNotifications || false}
+                  onChange={handleToggleSuppressNotifications}
+                />
+                <span>Suppress Notifications</span>
+              </label>
+              <div className="hint">
+                If the message contains mentions in its "Content" field, this prevents Discord from sending out notifications when it is sent.
+              </div>
+            </div>
+          </div>
+
+          <div className="section">
+            <div className="section-header">
+              <label>
+                Files <span className="file-size">{formatFileSize(getTotalFileSize())} / 25 MB</span>
+              </label>
+              <div className="file-actions">
+                <button 
+                  className="btn-small" 
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Browse
+                </button>
+                <button 
+                  className="btn-small" 
+                  onClick={handlePasteFiles}
+                >
+                  Clipboard
+                </button>
+                {(message.files || []).length > 0 && (
+                  <button 
+                    className="btn-small btn-clear-files" 
+                    onClick={handleClearFiles}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileSelect}
+              style={{ display: 'none' }}
+            />
+            {(message.files || []).length > 0 && (
+              <div className="files-list">
+                {message.files?.map(file => (
+                  <div key={file.id} className="file-item">
+                    <span className="file-name">{file.name}</span>
+                    <span className="file-size">{formatFileSize(file.size)}</span>
+                    <button
+                      className="btn-remove-file"
+                      onClick={() => handleRemoveFile(file.id)}
+                      title="Eliminar archivo"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="section">

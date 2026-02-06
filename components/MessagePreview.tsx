@@ -1,5 +1,6 @@
 import { Message, Webhook } from '../types/types';
 import { useState } from 'react';
+import { StorageService } from '../services/storage';
 import '../css/MessagePreview.css';
 
 interface Props {
@@ -9,7 +10,6 @@ interface Props {
 
 export function MessagePreview({ message, webhook }: Props) {
   const [sending, setSending] = useState(false);
-  const [lastSent, setLastSent] = useState<Date | null>(null);
 
   const handleSend = async () => {
     if (!webhook) {
@@ -17,34 +17,55 @@ export function MessagePreview({ message, webhook }: Props) {
       return;
     }
 
-    if (!message.content && message.embeds.length === 0) {
-      alert('El mensaje debe tener contenido o al menos un embed');
+    if (!message.content && message.embeds.length === 0 && (!message.files || message.files.length === 0)) {
+      alert('El mensaje debe tener contenido, un embed o al menos un archivo');
+      return;
+    }
+
+    // Validar suppress embeds con embeds
+    if (message.flags?.suppressEmbeds && message.embeds.length > 0) {
+      alert('No puedes usar "Suppress Embeds" con embeds ricos. Elimina los embeds o desactiva esta opción.');
       return;
     }
 
     setSending(true);
 
     try {
-      const payload = {
-        content: message.content || undefined,
-        username: message.username || undefined,
-        avatar_url: message.avatarUrl || undefined,
-        embeds: message.embeds.length > 0 ? message.embeds : undefined,
-        tts: message.tts || undefined
-      };
+      const formData = new FormData();
+
+      // Preparar payload
+      const payload: any = {};
+      
+      if (message.content) payload.content = message.content;
+      if (message.username) payload.username = message.username;
+      if (message.avatarUrl) payload.avatar_url = message.avatarUrl;
+      if (message.embeds.length > 0) payload.embeds = message.embeds;
+      if (message.tts) payload.tts = message.tts;
+      if (message.threadName) payload.thread_name = message.threadName;
+
+      // Convertir flags a número
+      const flagsNumber = StorageService.flagsToNumber(message.flags);
+      if (flagsNumber > 0) payload.flags = flagsNumber;
+
+      // Agregar payload JSON
+      formData.append('payload_json', JSON.stringify(payload));
+
+      // Agregar archivos
+      if (message.files && message.files.length > 0) {
+        message.files.forEach((fileData, index) => {
+          formData.append(`files[${index}]`, fileData.file, fileData.name);
+        });
+      }
 
       const response = await fetch(webhook.url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: formData
       });
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ message: 'Unknown error' }));
         throw new Error(error.message || `HTTP ${response.status}`);
       }
-
-      setLastSent(new Date());
     } catch (error) {
       console.error('Send error:', error);
       alert(`❌ Error al enviar: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -70,6 +91,24 @@ export function MessagePreview({ message, webhook }: Props) {
         </button>
       </div>
 
+      {message.threadName && (
+        <div className="thread-info">
+          <span className="thread-icon">🧵</span>
+          <span className="thread-name">Thread: {message.threadName}</span>
+        </div>
+      )}
+
+      {(message.flags?.suppressEmbeds || message.flags?.suppressNotifications) && (
+        <div className="flags-info">
+          {message.flags.suppressEmbeds && (
+            <span className="flag-badge">🚫 Suppress Embeds</span>
+          )}
+          {message.flags.suppressNotifications && (
+            <span className="flag-badge">🔕 Suppress Notifications</span>
+          )}
+        </div>
+      )}
+
       <div className="discord-preview">
         <div className="discord-message">
           <div className="message-avatar">
@@ -91,6 +130,31 @@ export function MessagePreview({ message, webhook }: Props) {
               <div className="message-text">{message.content}</div>
             )}
 
+            {message.files && message.files.length > 0 && (
+              <div className="message-files">
+                {message.files.map((file) => (
+                  <div key={file.id} className="file-preview">
+                    {file.file.type.startsWith('image/') ? (
+                      <img 
+                        src={URL.createObjectURL(file.file)} 
+                        alt={file.name}
+                        className="file-preview-image"
+                      />
+                    ) : (
+                      <div className="file-preview-generic">
+                        <div className="file-icon">📄</div>
+                        <div className="file-details">
+                          <div className="file-preview-name">{file.name}</div>
+                          <div className="file-preview-size">
+                            {(file.size / 1024).toFixed(2)} KB
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             {message.embeds.map((embed, index) => (
               <div 

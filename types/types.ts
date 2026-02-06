@@ -36,12 +36,27 @@ export interface Embed {
   fields?: EmbedField[];
 }
 
+export interface MessageFlags {
+  suppressEmbeds?: boolean;
+  suppressNotifications?: boolean;
+}
+
+export interface MessageFile {
+  id: string;
+  file: File;
+  name: string;
+  size: number;
+}
+
 export interface Message {
   content: string;
   username?: string;
   avatarUrl?: string;
   embeds: Embed[];
   tts?: boolean;
+  threadName?: string;
+  files?: MessageFile[];
+  flags?: MessageFlags;
 }
 
 export interface WebhookPayload {
@@ -50,4 +65,6 @@ export interface WebhookPayload {
   avatar_url?: string;
   embeds?: Embed[];
   tts?: boolean;
+  thread_name?: string;
+  flags?: number;
 }

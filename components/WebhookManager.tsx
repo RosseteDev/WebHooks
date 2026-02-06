@@ -12,7 +12,7 @@ interface Props {
   onReorder: (startIndex: number, endIndex: number) => void;
 }
 
-export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete, onReorder }: Props) {
+export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete }: Props) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newWebhookName, setNewWebhookName] = useState('');
   const [newWebhookUrl, setNewWebhookUrl] = useState('');
@@ -89,12 +89,10 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
       setLoading(false);
     }
   };
-
-  const handleDragStart = (index: number) => {
-    // Implementar si es necesario
+  const handleDragStart = () => {
   };
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
@@ -116,13 +114,13 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
       </div>
 
       <div className="webhook-grid">
-        {webhooks.map((webhook, index) => (
+        {webhooks.map((webhook) => (
           <div
             key={webhook.id}
             className={`webhook-card ${selectedId === webhook.id ? 'selected' : ''}`}
             draggable
-            onDragStart={() => handleDragStart(index)}
-            onDragOver={(e) => handleDragOver(e, index)}
+            onDragStart={() => handleDragStart()}
+            onDragOver={(e) => handleDragOver(e)}
             onDragEnd={handleDragEnd}
             onClick={() => onSelect(webhook.id)}
           >
