@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Webhook } from '../types/types';
 import { StorageService } from '../services/storage';
-import { WebhookContextMenu } from '../components/WebhookContextMenu';
+import { WebhookContextMenu } from './WebhookContextMenu';
+import { WebhookSelector } from './WebhookSelector';
 import '../css/WebhookManager.css';
 
 interface Props {
@@ -18,6 +19,7 @@ const WEBHOOK_COLORS = ['#5865F2', '#57F287', '#FEE75C', '#ED4245', '#EB459E', '
 
 export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete, onReorder }: Props) {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showWebhookSelector, setShowWebhookSelector] = useState(false);
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuWebhook, setContextMenuWebhook] = useState<Webhook | null>(null);
   const [newWebhookName, setNewWebhookName] = useState('');
@@ -154,6 +156,21 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
     setShowContextMenu(true);
   };
 
+  // Handler para selección de webhook desde el selector visual
+  const handleWebhookSelect = (webhook: Webhook) => {
+    console.log('Webhook selected from selector:', webhook);
+    // Seleccionar el webhook
+    onSelect(webhook.id);
+    // Cerrar el selector
+    setShowWebhookSelector(false);
+  };
+
+  // Handler para abrir context menu desde el selector
+  const handleOpenContextMenuFromSelector = (webhook: Webhook) => {
+    setContextMenuWebhook(webhook);
+    setShowContextMenu(true);
+  };
+
   // Drag & Drop handlers
   const handleDragStart = (id: string) => {
     setDraggedItem(id);
@@ -222,6 +239,16 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
           >
             ☰
           </button>
+          
+          {/* Botón para abrir selector visual de webhooks */}
+          <button 
+            className="btn-webhook-selector" 
+            onClick={() => setShowWebhookSelector(true)}
+            title="Selector visual de webhooks"
+          >
+            🎮
+          </button>
+          
           <button 
             className="btn-add" 
             onClick={() => setShowAddModal(true)}
@@ -398,6 +425,17 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
             </div>
           </div>
         </div>
+      )}
+
+      {/* Webhook Selector Visual */}
+      {showWebhookSelector && (
+        <WebhookSelector
+          webhooks={webhooks}
+          currentWebhook={webhooks.find(w => w.id === selectedId)}
+          onSelect={handleWebhookSelect}
+          onClose={() => setShowWebhookSelector(false)}
+          onOpenContextMenu={handleOpenContextMenuFromSelector}
+        />
       )}
 
       {/* Context Menu estilo juego */}
