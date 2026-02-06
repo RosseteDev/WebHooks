@@ -1,0 +1,186 @@
+.share-modal {
+  max-width: 600px;
+  width: 90%;
+}
+
+.share-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.share-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.share-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #dcddde;
+  line-height: 1.5;
+}
+
+.app.light .share-info p {
+  color: #2e3338;
+}
+
+.share-info .warning {
+  padding: 12px;
+  background: rgba(237, 66, 69, 0.1);
+  border-left: 3px solid #ed4245;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #faa81a;
+}
+
+.app.light .share-info .warning {
+  background: rgba(237, 66, 69, 0.05);
+}
+
+/* Message Stats */
+.message-stats {
+  background: #2f3136;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.app.light .message-stats {
+  background: #f2f3f5;
+}
+
+.message-stats h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #b9bbbe;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.app.light .message-stats h3 {
+  color: #5f6368;
+}
+
+.stats-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.stat-label {
+  color: #b9bbbe;
+  font-weight: 500;
+}
+
+.app.light .stat-label {
+  color: #5f6368;
+}
+
+.stat-value {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.app.light .stat-value {
+  color: #2e3338;
+}
+
+/* Generate Button */
+.btn-generate {
+  width: 100%;
+  padding: 12px;
+  font-size: 15px;
+}
+
+/* URL Section */
+.url-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.url-display {
+  display: flex;
+  gap: 8px;
+}
+
+.url-display input {
+  flex: 1;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+}
+
+.btn-copy {
+  min-width: 100px;
+  background: #3ba55d !important;
+  color: white !important;
+  transition: all 0.2s ease;
+}
+
+.btn-copy:hover {
+  background: #2d7d46 !important;
+}
+
+.btn-copy.copied {
+  background: #5865f2 !important;
+}
+
+.url-info {
+  font-size: 12px;
+  color: #b9bbbe;
+}
+
+.app.light .url-info {
+  color: #5f6368;
+}
+
+.url-info p {
+  margin: 4px 0;
+}
+
+.warning-text {
+  color: #faa81a !important;
+  font-weight: 500;
+}
+
+/* Share Actions */
+.share-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.share-actions .btn-small {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .share-modal {
+    width: 95%;
+  }
+
+  .url-display {
+    flex-direction: column;
+  }
+
+  .btn-copy {
+    width: 100%;
+  }
+
+  .share-actions {
+    flex-direction: column;
+  }
+
+  .share-actions .btn-small {
+    width: 100%;
+  }
+}

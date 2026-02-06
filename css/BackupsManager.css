@@ -1,0 +1,224 @@
+.backups-modal {
+  max-width: 700px;
+  max-height: 80vh;
+  width: 90%;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #2f3136;
+}
+
+.app.light .modal-header {
+  border-bottom-color: #d1d3d7;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.btn-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 24px;
+  line-height: 1;
+  background: transparent !important;
+  color: #b9bbbe;
+}
+
+.btn-close:hover {
+  color: #dcddde;
+}
+
+.backups-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Save Section */
+.save-section h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #dcddde;
+}
+
+.app.light .save-section h3 {
+  color: #2e3338;
+}
+
+.save-group {
+  display: flex;
+  gap: 8px;
+}
+
+.save-group input {
+  flex: 1;
+}
+
+/* Backups List Section */
+.backups-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-header h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #dcddde;
+}
+
+.app.light .section-header h3 {
+  color: #2e3338;
+}
+
+/* Backups List */
+.backups-list {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.backup-item {
+  background: #2f3136;
+  border: 1px solid #202225;
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.15s ease;
+}
+
+.app.light .backup-item {
+  background: #ffffff;
+  border-color: #d1d3d7;
+}
+
+.backup-item:hover {
+  background: #36393f;
+  border-color: #5865f2;
+}
+
+.app.light .backup-item:hover {
+  background: #f2f3f5;
+}
+
+.backup-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.backup-info input {
+  width: 100%;
+  margin: 0;
+}
+
+.backup-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #ffffff;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app.light .backup-name {
+  color: #2e3338;
+}
+
+.backup-date {
+  font-size: 12px;
+  color: #b9bbbe;
+  margin-bottom: 2px;
+}
+
+.app.light .backup-date {
+  color: #5f6368;
+}
+
+.backup-stats {
+  font-size: 11px;
+  color: #72767d;
+}
+
+.app.light .backup-stats {
+  color: #80868b;
+}
+
+/* Backup Actions */
+.backup-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: #40444b;
+  border-color: #5865f2;
+}
+
+.app.light .btn-icon:hover {
+  background: #e3e5e8;
+}
+
+.btn-icon.btn-danger:hover {
+  background: #ed4245;
+  border-color: #ed4245;
+}
+
+/* Empty State */
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #b9bbbe;
+  font-size: 14px;
+}
+
+.app.light .empty-state {
+  color: #5f6368;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .backups-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .backup-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .backup-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
