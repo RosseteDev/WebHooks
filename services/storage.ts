@@ -96,7 +96,7 @@ export class StorageService {
       content: typeof data.content === 'string' ? data.content : '',
       username: typeof data.username === 'string' ? data.username : undefined,
       avatarUrl: typeof data.avatar_url === 'string' ? data.avatar_url : undefined,
-      embeds: Array.isArray(data.embeds) ? data.embeds.map(this.parseEmbed) : [],
+      embeds: Array.isArray(data.embeds) ? data.embeds.map(StorageService.parseEmbed) : [],
       tts: typeof data.tts === 'boolean' ? data.tts : undefined,
       threadName: typeof data.thread_name === 'string' ? data.thread_name : undefined,
       files: [],
@@ -122,11 +122,11 @@ export class StorageService {
       url: typeof embed.url === 'string' ? embed.url : undefined,
       color: typeof embed.color === 'number' ? embed.color : undefined,
       timestamp: typeof embed.timestamp === 'string' ? embed.timestamp : undefined,
-      author: this.parseEmbedAuthor(embed.author),
-      footer: this.parseEmbedFooter(embed.footer),
+      author: StorageService.parseEmbedAuthor(embed.author),
+      footer: StorageService.parseEmbedFooter(embed.footer),
       thumbnail: embed.thumbnail?.url ? { url: embed.thumbnail.url } : undefined,
       image: embed.image?.url ? { url: embed.image.url } : undefined,
-      fields: Array.isArray(embed.fields) ? embed.fields.map(this.parseField) : undefined
+      fields: Array.isArray(embed.fields) ? embed.fields.map(StorageService.parseField) : undefined
     };
   }
 

@@ -179,6 +179,41 @@ export function MessageEditor({ message, onChange, onClear, onLoadMessage, onExp
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
   };
 
+  // Función mejorada para convertir JSON de Discord API a formato interno
+  const convertDiscordJsonToMessage = (parsed: any): Message => {
+    return {
+      content: parsed.content || '',
+      username: parsed.username,
+      avatarUrl: parsed.avatar_url || parsed.avatarUrl,
+      threadName: parsed.thread_name || parsed.threadName,
+      tts: parsed.tts,
+      embeds: (parsed.embeds || []).map((embed: any) => ({
+        title: embed.title,
+        description: embed.description,
+        url: embed.url,
+        color: typeof embed.color === 'number' ? embed.color : undefined,
+        timestamp: embed.timestamp,
+        author: embed.author ? {
+          name: embed.author.name,
+          url: embed.author.url,
+          iconUrl: embed.author.icon_url || embed.author.iconUrl
+        } : undefined,
+        footer: embed.footer ? {
+          text: embed.footer.text,
+          iconUrl: embed.footer.icon_url || embed.footer.iconUrl
+        } : undefined,
+        thumbnail: embed.thumbnail,
+        image: embed.image,
+        fields: embed.fields
+      })),
+      files: message.files, // Mantener los archivos actuales ya que no se pueden serializar en JSON
+      flags: typeof parsed.flags === 'number' ? {
+        suppressEmbeds: !!(parsed.flags & (1 << 2)),
+        suppressNotifications: !!(parsed.flags & (1 << 12))
+      } : (parsed.flags || message.flags)
+    };
+  };
+
   return (
     <div className="message-editor">
       <div className="editor-header">
@@ -372,7 +407,8 @@ export function MessageEditor({ message, onChange, onClear, onLoadMessage, onExp
             onChange={(e) => {
               try {
                 const parsed = JSON.parse(e.target.value);
-                onChange(parsed);
+                const convertedMessage = convertDiscordJsonToMessage(parsed);
+                onChange(convertedMessage);
               } catch {
                 // Invalid JSON, don't update
               }

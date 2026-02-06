@@ -41,6 +41,7 @@ function App() {
         window.history.replaceState({}, document.title, window.location.pathname);
       } catch (error) {
         console.error('Error loading shared message:', error);
+        alert('Error al cargar el mensaje compartido. El enlace puede estar corrupto.');
       }
     }
   }, []);
@@ -77,17 +78,116 @@ function App() {
     }
   };
 
+  // Función para extraer el message ID de una URL de Discord
+  const extractMessageIdFromDiscordUrl = (url: string): string | null => {
+    try {
+      const parsed = new URL(url);
+      
+      // Verificar si es una URL de Discord
+      if (!parsed.hostname.includes('discord.com') && !parsed.hostname.includes('discordapp.com')) {
+        return null;
+      }
+
+      // Formato: https://discord.com/channels/GUILD_ID/CHANNEL_ID/MESSAGE_ID
+      const pathParts = parsed.pathname.split('/').filter(p => p);
+      
+      if (pathParts[0] === 'channels' && pathParts.length === 4) {
+        const messageId = pathParts[3];
+        return messageId;
+      }
+      
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
   const handleLoadMessage = async (url: string) => {
+    // Verificar si es una URL de Discord
+    const messageId = extractMessageIdFromDiscordUrl(url);
+    
+    if (messageId) {
+      // Es una URL de Discord - necesitamos un webhook seleccionado
+      if (!selectedWebhook) {
+        alert('Para cargar mensajes de Discord, primero selecciona el webhook que envió el mensaje.');
+        return;
+      }
+      
+      // Confirmar con el usuario
+      const confirmed = window.confirm(
+        'Cargar mensaje de Discord eliminará todo el contenido actual del editor. ¿Continuar?'
+      );
+      
+      if (!confirmed) {
+        return;
+      }
+      
+      try {
+        // Construir URL del webhook + message ID
+        const webhookUrl = selectedWebhook.url;
+        const fetchUrl = `${webhookUrl}/messages/${messageId}`;
+        
+        const response = await fetch(fetchUrl);
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Mensaje no encontrado. Verifica que:\n1. El mensaje exista\n2. Fue enviado por el webhook seleccionado\n3. El ID del mensaje sea correcto');
+          } else if (response.status === 401 || response.status === 403) {
+            throw new Error('Este mensaje no fue enviado por el webhook seleccionado, o el webhook ya no tiene acceso.');
+          } else {
+            throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+          }
+        }
+        
+        const data = await response.json();
+        const parsed = StorageService.parseMessageJSON(data);
+        setMessage(parsed);
+        
+      } catch (error) {
+        console.error('Load error:', error);
+        
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          alert('Error de red. Verifica tu conexión a internet.');
+        } else if (error instanceof Error) {
+          alert(error.message);
+        } else {
+          alert('Error al cargar mensaje desde Discord.');
+        }
+      }
+      
+      return;
+    }
+    
+    // No es una URL de Discord, intentar cargar como URL normal de JSON
     try {
       const response = await fetch(url);
-      if (!response.ok) throw new Error('Failed to fetch');
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Recurso no encontrado. Verifica que la URL sea correcta.');
+        } else if (response.status === 403 || response.status === 401) {
+          throw new Error('No tienes permisos para acceder a este recurso.');
+        } else {
+          throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+        }
+      }
       
       const data = await response.json();
       const parsed = StorageService.parseMessageJSON(data);
       setMessage(parsed);
+      
     } catch (error) {
       console.error('Load error:', error);
-      alert('Error al cargar mensaje desde URL');
+      
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        alert('Error de red. Verifica tu conexión a internet.');
+      } else if (error instanceof SyntaxError) {
+        alert('El contenido descargado no es un JSON válido.');
+      } else if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('Error al cargar mensaje desde URL. Verifica que la URL sea válida.');
+      }
     }
   };
 
