@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Webhook } from '../types/types';
 import { StorageService } from '../services/storage';
-import { WebhookContextMenu } from './WebhookContextMenu';
 import { WebhookSelector } from './WebhookSelector';
 import '../css/WebhookManager.css';
 
@@ -20,8 +19,6 @@ const WEBHOOK_COLORS = ['#5865F2', '#57F287', '#FEE75C', '#ED4245', '#EB459E', '
 export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete, onReorder }: Props) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showWebhookSelector, setShowWebhookSelector] = useState(false);
-  const [showContextMenu, setShowContextMenu] = useState(false);
-  const [contextMenuWebhook, setContextMenuWebhook] = useState<Webhook | null>(null);
   const [newWebhookName, setNewWebhookName] = useState('');
   const [newWebhookUrl, setNewWebhookUrl] = useState('');
   const [newWebhookCategory, setNewWebhookCategory] = useState('');
@@ -146,14 +143,7 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
   const handleDeleteWebhook = (webhook: Webhook) => {
     if (window.confirm(`¿Eliminar webhook "${webhook.name}"?`)) {
       onDelete(webhook.id);
-      setShowContextMenu(false);
     }
-  };
-
-  const handleOpenContextMenu = (webhook: Webhook, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setContextMenuWebhook(webhook);
-    setShowContextMenu(true);
   };
 
   // Handler para selección de webhook desde el selector visual
@@ -163,12 +153,6 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
     onSelect(webhook.id);
     // Cerrar el selector
     setShowWebhookSelector(false);
-  };
-
-  // Handler para abrir context menu desde el selector
-  const handleOpenContextMenuFromSelector = (webhook: Webhook) => {
-    setContextMenuWebhook(webhook);
-    setShowContextMenu(true);
   };
 
   // Drag & Drop handlers
@@ -321,14 +305,6 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
                 {webhook.isFavorite ? '⭐' : '☆'}
               </button>
 
-              <button
-                className="btn-settings"
-                onClick={(e) => handleOpenContextMenu(webhook, e)}
-                title="Configuración"
-              >
-                ⚙️
-              </button>
-
               <div className="webhook-avatar">
                 {webhook.avatarUrl ? (
                   <img src={webhook.avatarUrl} alt={webhook.name} />
@@ -427,28 +403,19 @@ export function WebhookManager({ webhooks, selectedId, onSelect, onAdd, onDelete
         </div>
       )}
 
-      {/* Webhook Selector Visual */}
+      {/* Webhook Selector Visual - CON TODAS LAS FUNCIONALIDADES INTEGRADAS */}
       {showWebhookSelector && (
         <WebhookSelector
           webhooks={webhooks}
           currentWebhook={webhooks.find(w => w.id === selectedId)}
           onSelect={handleWebhookSelect}
           onClose={() => setShowWebhookSelector(false)}
-          onOpenContextMenu={handleOpenContextMenuFromSelector}
-        />
-      )}
-
-      {/* Context Menu estilo juego */}
-      {showContextMenu && contextMenuWebhook && (
-        <WebhookContextMenu
-          webhook={contextMenuWebhook}
-          categories={categories}
-          colors={WEBHOOK_COLORS}
-          onClose={() => setShowContextMenu(false)}
           onToggleFavorite={handleToggleFavorite}
           onChangeCategory={handleChangeCategory}
           onChangeColor={handleChangeColor}
           onDelete={handleDeleteWebhook}
+          categories={categories}
+          colors={WEBHOOK_COLORS}
         />
       )}
     </div>
