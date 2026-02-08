@@ -50,33 +50,60 @@ input, textarea, select {
 }
 
 /* =========================
-   APP CONTAINER
+   APP CONTAINER - HIERARCHICAL LAYOUT
 ========================= */
 
 .app {
   display: flex;
+  flex-direction: column;
   height: 100vh;
-  gap: 16px;
-  padding: 16px;
+  overflow: hidden;
   position: relative;
   z-index: 1;
 }
 
+.app-container {
+  display: flex;
+  flex: 1;
+  gap: 16px;
+  padding: 16px;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* =========================
-   LEFT PANEL - WEBHOOK MANAGER
+   LEFT PANEL - FLEXIBLE
 ========================= */
 
 .left-panel {
-  flex: 0 0 340px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* =========================
+   RIGHT PANEL - MESSAGE PREVIEW
+========================= */
+
+.right-panel {
+  flex: 0 0 420px;
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: all 0.3s ease;
+  min-width: 0;
 }
 
-/* WebhookManager ya tiene sus estilos en WebhookManager.css */
+/* Hide preview when overlays are open */
+.right-panel.hidden {
+  display: none;
+}
 
 /* =========================
-   MIDDLE PANEL - MESSAGE EDITOR
+   MESSAGE EDITOR
 ========================= */
 
 .message-editor {
@@ -94,6 +121,7 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-height: 0;
 }
 
 .message-editor::before {
@@ -411,15 +439,8 @@ input, textarea, select {
 }
 
 /* =========================
-   RIGHT PANEL - MESSAGE PREVIEW
+   MESSAGE PREVIEW
 ========================= */
-
-.right-panel {
-  flex: 0 0 420px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
 
 .message-preview {
   background: linear-gradient(155deg, #0a0a1a 0%, #1a1a2e 50%, #0f0f1f 100%);
@@ -540,6 +561,7 @@ input, textarea, select {
   position: relative;
   z-index: 1;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+  min-height: 0;
 }
 
 .discord-preview::-webkit-scrollbar {
@@ -586,12 +608,14 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .message-header {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .username {
@@ -626,31 +650,28 @@ input, textarea, select {
 ========================= */
 
 @media (max-width: 1400px) {
-  .left-panel {
-    flex: 0 0 300px;
-  }
-  
   .right-panel {
     flex: 0 0 380px;
   }
 }
 
 @media (max-width: 1200px) {
-  .app {
+  .app-container {
     flex-direction: column;
-    height: auto;
-    min-height: 100vh;
   }
   
-  .left-panel,
+  .left-panel {
+    min-height: 600px;
+  }
+  
   .right-panel {
-    flex: 1;
-    width: 100%;
+    flex: 0 0 auto;
+    min-height: 500px;
   }
 }
 
 @media (max-width: 768px) {
-  .app {
+  .app-container {
     padding: 12px;
     gap: 12px;
   }
@@ -667,6 +688,16 @@ input, textarea, select {
   .btn-send {
     padding: 10px 20px;
     font-size: 12px;
+  }
+  
+  .message-header {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .right-panel {
+    min-height: 400px;
   }
 }
 
